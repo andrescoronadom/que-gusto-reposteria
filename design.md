@@ -50,12 +50,16 @@ Los colores originales del logo (morado aproximado `#623060` y azul aproximado `
 ### Encabezado
 
 - Mostrar el nombre de marca y un acceso visible al pedido.
+- En escritorio, acompañar la marca con una nota discreta de ubicación; en móvil, dar prioridad al acceso al carrito.
 - Mantener el encabezado compacto y disponible durante el desplazamiento.
 - El contador del carrito debe indicar unidades agregadas, no el número de tipos de producto.
 
 ### Catálogo
 
-- Abrir con un hero menta, titular Caprasimo y mensaje breve de marca; seguir con una introducción al menú, categorías y productos.
+- Abrir con un hero editorial menta: titular Caprasimo, acción para descubrir el menú y una ilustración CSS de galleta. La ilustración es decorativa, no es un logo ni sustituye las fotos de los productos.
+- En escritorio, distribuir el hero en texto e ilustración; en móvil, apilarlo y reducir el arte para que el catálogo siga cerca del primer pantallazo.
+- Mostrar las categorías como filtros tipo píldora; permitir desplazamiento horizontal en pantallas estrechas sin comprimir sus etiquetas.
+- Dar protagonismo a la foto de cada dulzura. En móvil, usar una ficha compacta con imagen lateral; en pantallas amplias, mostrar una cuadrícula con fotos más grandes.
 - Cada tarjeta puede mostrar imagen, categoría, nombre, descripción/características, precio y acción para agregar.
 - Las categorías provienen del catálogo; no fijar una lista paralela en la interfaz.
 - Mantener visible el precio en COP y no añadir costos de entrega que no estén confirmados.
@@ -64,6 +68,8 @@ Los colores originales del logo (morado aproximado `#623060` y azul aproximado `
 ### Carrito
 
 - Mostrar nombre, cantidad, precio unitario y subtotal por línea.
+- En escritorio, separar el resumen del pedido y el formulario; en móvil, apilarlos con el resumen primero.
+- Mantener visible el resumen en escritorio sin hacerlo fijo en móvil.
 - Permitir aumentar, disminuir o eliminar una línea con controles accesibles.
 - Calcular el subtotal con los productos vigentes del catálogo; el servidor vuelve a validar los precios al recibir la solicitud.
 - No pedir datos de pago ni mostrar una confirmación que pueda confundirse con un pago realizado.

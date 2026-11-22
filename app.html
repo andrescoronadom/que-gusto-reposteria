@@ -105,9 +105,17 @@ let formDraft = {
 
 function header() {
   const count = cartCount();
-  return `<header class="qg-header"><div class="head-inner">
-    <a class="brand" href="#/" aria-label="Qué Gusto · Repostería, inicio"><span class="heading-md">Qué Gusto</span><span class="eyebrow qg-eyebrow">REPOSTERÍA</span></a>
-    <a class="qg-btn qg-btn--secondary qg-cartbtn" href="#/pedido" aria-label="Ver mi pedido">${svg('cart')}Mi pedido${count ? `<span class="qg-cartbtn__count caption">${count}</span>` : ''}</a>
+  return `<header class="qg-header"><div class="qg-header__inner">
+    <a class="qg-brand" href="#/" aria-label="Qué Gusto Repostería, inicio">
+      <span class="qg-brand__name">Qué Gusto</span>
+      <span class="qg-brand__descriptor">Repostería artesanal</span>
+    </a>
+    <div class="qg-header__actions">
+      <span class="qg-header__city caption">Hecho con gusto en Medellín</span>
+      <a class="qg-cartbtn" href="#/pedido" aria-label="${count ? `Ver mi pedido, ${count} productos` : 'Ver mi pedido'}">
+        ${svg('cart')}<span>Mi pedido</span>${count ? `<span class="qg-cartbtn__count caption">${count}</span>` : ''}
+      </a>
+    </div>
   </div></header>`;
 }
 
@@ -166,38 +174,56 @@ function totalCarrito() {
 function viewCatalog() {
   const categories = [...new Set(products.map((product) => product.categoria).filter(Boolean))];
   const list = products.filter((product) => filter === 'todo' || product.categoria === filter);
-  const allButton = `<button class="qg-btn ${filter === 'todo' ? 'qg-btn--primary' : 'qg-btn--secondary'}" type="button" data-filter="todo" aria-pressed="${filter === 'todo'}">Todo</button>`;
+  const allButton = `<button class="qg-filter ${filter === 'todo' ? 'is-selected' : ''}" type="button" data-filter="todo" aria-pressed="${filter === 'todo'}">Todo</button>`;
   const filterButtons = categories.map((category) =>
-    `<button class="qg-btn ${filter === category ? 'qg-btn--primary' : 'qg-btn--secondary'}" type="button" data-filter="${esc(category)}" aria-pressed="${filter === category}">${esc(category)}</button>`
+    `<button class="qg-filter ${filter === category ? 'is-selected' : ''}" type="button" data-filter="${esc(category)}" aria-pressed="${filter === category}">${esc(category)}</button>`
   ).join('');
   const count = cartCount();
   const total = totalCarrito();
 
-  $app.innerHTML = `${header()}<main class="wrap">
+  $app.innerHTML = `${header()}<main class="wrap qg-store">
     <section class="qg-hero" aria-labelledby="catalog-title">
       <div class="qg-hero__copy">
-        <span class="eyebrow qg-eyebrow">HORNEADO CON GUSTO EN MEDELLÍN</span>
-        <h1 id="catalog-title" class="display-hero brandc qg-hero__title">Un antojo hecho con gusto</h1>
-        <p class="body-lg qg-hero__description">Elige tus favoritos y armamos tu caja sin afán. Un momento rico también puede ser parte de cualquier día.</p>
-        <span class="qg-hero__note caption">Hecho a mano, con mantequilla real</span>
+        <span class="eyebrow qg-eyebrow">UNA PAUSA RECIÉN HORNEADA</span>
+        <h1 id="catalog-title" class="qg-hero__title">Date gusto, sin afán</h1>
+        <p class="body-lg qg-hero__description">Cookies, rollos y otras dulzuras hechas a mano para acompañar tus momentos favoritos.</p>
+        <button class="qg-btn qg-btn--primary qg-hero__cta" id="discover-menu" type="button">Explorar el menú <span aria-hidden="true">↓</span></button>
+        <span class="qg-hero__note caption">Ábrelo con gusto, disfrútalo sin afán</span>
+      </div>
+      <div class="qg-hero__art" aria-hidden="true">
+        <span class="qg-hero__orbit qg-hero__orbit--one"></span>
+        <span class="qg-hero__orbit qg-hero__orbit--two"></span>
+        <div class="qg-hero__cookie">
+          <span class="qg-hero__chip qg-hero__chip--one"></span>
+          <span class="qg-hero__chip qg-hero__chip--two"></span>
+          <span class="qg-hero__chip qg-hero__chip--three"></span>
+          <span class="qg-hero__chip qg-hero__chip--four"></span>
+          <span class="qg-hero__chip qg-hero__chip--five"></span>
+        </div>
+        <span class="qg-hero__art-label">Hecho a mano</span>
       </div>
     </section>
-    <section class="qg-catalog-section" aria-labelledby="menu-title">
+    <section class="qg-catalog-section" id="menu" aria-labelledby="menu-title">
       <div class="qg-catalog-intro">
         <div class="qg-catalog-intro__copy">
-          <span class="eyebrow qg-eyebrow">UN RATITO PARA TI</span>
-          <h2 id="menu-title" class="heading-lg brandc">El menú de hoy</h2>
+          <span class="eyebrow qg-eyebrow">HECHO EN MEDELLÍN, PARA DISFRUTAR</span>
+          <h2 id="menu-title" class="heading-lg brandc">Elige tu antojo</h2>
         </div>
-        <p class="qg-catalog-intro__aside body-sm">Cookies, rollos y otras dulzuras para regalarte una pausa o compartir en la mesa.</p>
+        <p class="qg-catalog-intro__aside body-sm">${products.length} ${products.length === 1 ? 'dulzura lista' : 'dulzuras listas'} para descubrir. Todas hechas con cariño y tiempo.</p>
       </div>
-      ${categories.length ? `<div class="row" role="group" aria-label="Filtrar por tipo de producto">${allButton}${filterButtons}</div>` : ''}
+      ${categories.length ? `<div class="qg-filter-row" role="group" aria-label="Filtrar por tipo de dulzura">${allButton}${filterButtons}</div>` : ''}
       ${list.length ? `<div class="grid">${list.map(productCard).join('')}</div>`
         : `<div class="center" style="padding:48px 16px;display:flex;flex-direction:column;gap:8px"><h2 class="heading-md brandc">${products.length ? 'Aún no hay dulzuras en esta categoría' : 'Por aquí todavía no hay dulzuras'}</h2><p>${products.length ? 'Prueba con otro tipo.' : 'Vuelve pronto; estaremos horneando algo rico.'}</p></div>`}
     </section>
     ${count ? `<div class="bar"><a class="qg-btn qg-btn--primary qg-btn--lg" href="#/pedido">Ver mi pedido · ${count} · ${cop(total)}</a></div>` : ''}
+    <footer class="qg-footer"><span>Qué Gusto Repostería</span><span>Ábrelo con gusto, disfrútalo sin afán.</span></footer>
   </main>`;
 
   bindProductImageFallbacks();
+  document.getElementById('discover-menu').addEventListener('click', () => {
+    const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    document.getElementById('menu').scrollIntoView({ behavior, block: 'start' });
+  });
   $app.querySelectorAll('[data-filter]').forEach((button) => {
     button.addEventListener('click', () => {
       filter = button.dataset.filter;
@@ -251,7 +277,15 @@ function syncDeliveryFields() {
 function viewCart() {
   const ids = Object.keys(cart).filter((id) => products.some((product) => String(product.id) === String(id)));
   if (!ids.length) {
-    $app.innerHTML = `${header()}<main class="wrap center"><div style="padding:64px 16px;display:flex;flex-direction:column;gap:12px;align-items:center"><h1 class="heading-lg brandc">Tu pedido está vacío</h1><p>Agrega algo rico del catálogo para empezar.</p><a class="qg-btn qg-btn--primary qg-btn--lg" href="#/">Ver dulzuras</a></div></main>`;
+    $app.innerHTML = `${header()}<main class="wrap qg-empty-cart">
+      <div class="qg-empty-cart__content">
+        <span class="qg-empty-cart__icon" aria-hidden="true">${svg('cart')}</span>
+        <span class="eyebrow qg-eyebrow">TU CAJITA ESTÁ ESPERANDO</span>
+        <h1 class="heading-lg brandc">Todavía no hay antojos</h1>
+        <p>Explora el menú y agrega algo rico para empezar tu pedido.</p>
+        <a class="qg-btn qg-btn--primary qg-btn--lg" href="#/">Descubrir dulzuras</a>
+      </div>
+    </main>`;
     return;
   }
 
@@ -268,14 +302,35 @@ function viewCart() {
   }).join('');
 
   const draft = formDraft;
-  $app.innerHTML = `${header()}<main class="wrap">
-    <div style="display:flex;flex-direction:column;gap:8px"><a class="qg-btn qg-btn--ghost" href="#/" style="align-self:flex-start">${svg('back')}Seguir eligiendo</a><h1 class="heading-lg brandc">Tu pedido</h1></div>
-    <div class="cols"><section aria-label="Dulzuras de tu pedido"><div class="qg-cart">${lines}
-      <div class="qg-cart__totals"><div class="qg-cart__row"><span class="body-strong">Subtotal de tus dulzuras</span><span class="qg-price price">${cop(total)} COP</span></div>
-      <p class="body-sm muted">El envío, si aplica, se confirma contigo por WhatsApp. Aquí no se realiza ningún pago.</p></div></div></section>
-    <form class="form" id="order-form" novalidate><h2 class="heading-md brandc">Armemos tu pedido</h2>
+  $app.innerHTML = `${header()}<main class="wrap qg-checkout">
+    <div class="qg-checkout__intro">
+      <a class="qg-btn qg-btn--ghost" href="#/">${svg('back')}Seguir eligiendo</a>
+      <span class="eyebrow qg-eyebrow">UN PASITO MÁS</span>
+      <h1 class="heading-lg brandc">Tu pedido con gusto</h1>
+      <p>Revisa tus dulzuras y cuéntanos cuándo y dónde las quieres.</p>
+    </div>
+    <div class="qg-checkout__layout">
+      <section class="qg-summary" aria-label="Resumen de tu pedido">
+        <div class="qg-summary__card">
+          <div class="qg-summary__head">
+            <span class="eyebrow qg-eyebrow">TU SELECCIÓN</span>
+            <h2 class="heading-md brandc">${cartCount()} ${cartCount() === 1 ? 'dulzura' : 'dulzuras'}</h2>
+          </div>
+          <div class="qg-cart">${lines}</div>
+          <div class="qg-cart__totals">
+            <div class="qg-cart__row"><span class="body-strong">Subtotal</span><span class="qg-price price">${cop(total)} COP</span></div>
+            <p class="body-sm muted">El domicilio, si aplica, se confirma contigo por WhatsApp. Aquí no se realiza ningún pago.</p>
+          </div>
+        </div>
+      </section>
+      <form class="form qg-order-form" id="order-form" novalidate>
+      <div class="qg-order-form__intro">
+        <span class="eyebrow qg-eyebrow">HECHO A TU MEDIDA</span>
+        <h2 class="heading-md brandc">¿Cómo te lo acercamos?</h2>
+        <p class="body-sm muted">Déjanos tus datos para confirmar los detalles por WhatsApp.</p>
+      </div>
       <div class="qg-field" id="g-name"><label class="qg-field__label label" for="f-name">¿Cómo te llamas?</label><input id="f-name" name="name" class="qg-input body" autocomplete="name" placeholder="Ej. Laura Gómez" value="${esc(draft.name)}" required>${errMsg('Escribe tu nombre.')}</div>
-      <div class="qg-field" id="g-contact"><label class="qg-field__label label" for="f-contact">Tu WhatsApp</label><input id="f-contact" name="contact" class="qg-input body" inputmode="tel" autocomplete="tel" placeholder="Ej. 300 123 4567" value="${esc(draft.contact)}" required><p class="qg-field__hint body-sm">Te escribiremos para confirmar los detalles.</p>${errMsg('Déjanos un WhatsApp.')}</div>
+      <div class="qg-field" id="g-contact"><label class="qg-field__label label" for="f-contact">Tu WhatsApp</label><input id="f-contact" name="contact" class="qg-input body" inputmode="tel" autocomplete="tel" placeholder="Ej. 300 123 4567" value="${esc(draft.contact)}" required><p class="qg-field__hint body-sm">Te escribiremos para confirmar.</p>${errMsg('Déjanos un WhatsApp.')}</div>
       <div class="qg-field" id="g-date"><label class="qg-field__label label" for="f-date">¿Para qué fecha?</label><input id="f-date" name="delivery_date" type="date" min="${hoy()}" class="qg-input body" value="${esc(draft.delivery_date)}" required>${errMsg('Elige una fecha válida.')}</div>
       <div class="qg-field" id="g-franja">
         <label class="qg-field__label label" for="f-franja">¿En qué momento del día?</label>
@@ -284,22 +339,22 @@ function viewCart() {
           <option value="Tarde" ${draft.franja === 'Tarde' ? 'selected' : ''}>En la tarde (2:00 p. m. – 5:00 p. m.)</option>
         </select>
       </div>
-      <div class="qg-field" id="g-method">
+      <div class="qg-field qg-field--full" id="g-method">
         <label class="qg-field__label label" for="f-metodo">¿Cómo te lo acercamos?</label>
         <select id="f-metodo" name="metodoEntrega" class="qg-select body">
           <option value="Domicilio" ${draft.metodoEntrega === 'Domicilio' ? 'selected' : ''}>Te lo llevamos hasta la puerta</option>
           <option value="Recoger en Envigado" ${draft.metodoEntrega === 'Recoger en Envigado' ? 'selected' : ''}>Lo recoges en Envigado</option>
         </select>
       </div>
-      <div class="qg-field" id="g-address">
+      <div class="qg-field qg-field--full" id="g-address">
         <label class="qg-field__label label" for="f-address">Dirección y municipio</label>
         <input id="f-address" name="direccion" class="qg-input body" autocomplete="street-address" placeholder="Calle, número, barrio y municipio" value="${esc(draft.direccion)}">
         <p class="qg-field__hint body-sm">Solo la necesitamos si eliges domicilio.</p>
         ${errMsg('Escribe la dirección de entrega.')}
       </div>
-      <div class="qg-field"><label class="qg-field__label label" for="f-notes">¿Alguna nota para nosotros? (opcional)</label><textarea id="f-notes" name="notes" class="qg-textarea body" placeholder="Instrucciones especiales, dedicatoria...">${esc(draft.notes)}</textarea></div>
-      <p class="qg-status qg-status--error body-sm" id="form-error" role="alert" hidden></p>
-      <button type="submit" class="qg-btn qg-btn--primary qg-btn--lg qg-btn--block" id="send">Enviar solicitud de pedido</button>
+      <div class="qg-field qg-field--full"><label class="qg-field__label label" for="f-notes">¿Alguna nota para nosotros? (opcional)</label><textarea id="f-notes" name="notes" class="qg-textarea body" placeholder="Instrucciones especiales, dedicatoria...">${esc(draft.notes)}</textarea></div>
+      <p class="qg-status qg-status--error body-sm qg-field--full" id="form-error" role="alert" hidden></p>
+      <button type="submit" class="qg-btn qg-btn--primary qg-btn--lg qg-btn--block qg-field--full" id="send">Enviar solicitud de pedido</button>
     </form></div></main>`;
 
   bindCart();
@@ -423,11 +478,17 @@ function viewThanks() {
   const statusText = internalWarning
     ? 'Tu solicitud quedó registrada. Tuvimos un inconveniente con una notificación interna; no necesitas enviarla de nuevo. Te confirmaremos por WhatsApp.'
     : 'Tu pedido quedó registrado. No se realizó ningún pago.';
-  $app.innerHTML = `${header()}<main class="wrap narrow center" style="padding-top:64px">
-    <div class="qg-banner qg-banner--open" role="status" style="text-align:left">${svg('check')}<div class="qg-banner__text"><span class="body-strong">Solicitud recibida</span><span class="body-sm">${statusText}</span>${lastOrder.id ? `<span class="caption">Número de pedido: ${esc(lastOrder.id)}</span>` : ''}</div></div>
-    <h1 class="heading-lg brandc">¡Gracias, ${esc(lastOrder.name)}!</h1>
-    <p class="body-lg">Recibimos tu solicitud para el ${esc(fecha(lastOrder.date))}. Te escribiremos al ${esc(lastOrder.contact)} para confirmar los detalles.</p>
-    <a class="qg-btn qg-btn--primary qg-btn--lg" href="#/">Elegir otra dulzura</a></main>`;
+  $app.innerHTML = `${header()}<main class="wrap qg-thanks">
+    <div class="qg-thanks__card">
+      <span class="qg-thanks__icon" aria-hidden="true">${svg('check')}</span>
+      <span class="eyebrow qg-eyebrow">UN PEDIDO HECHO CON GUSTO</span>
+      <h1 class="heading-lg brandc">¡Gracias, ${esc(lastOrder.name)}!</h1>
+      <p class="body-lg">Recibimos tu solicitud para el ${esc(fecha(lastOrder.date))}. Te escribiremos al ${esc(lastOrder.contact)} para confirmar los detalles.</p>
+      <p class="qg-thanks__status body-sm" role="status">${statusText}</p>
+      ${lastOrder.id ? `<p class="qg-thanks__id caption">Número de pedido <strong>${esc(lastOrder.id)}</strong></p>` : ''}
+      <a class="qg-btn qg-btn--primary qg-btn--lg" href="#/">Volver a las dulzuras</a>
+    </div>
+  </main>`;
 }
 
 function cargarProductosGAS() {
