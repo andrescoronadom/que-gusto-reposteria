@@ -305,8 +305,10 @@ function syncDeliveryFields() {
   const isHomeDelivery = document.getElementById('f-metodo').value === 'Domicilio';
   const addressGroup = document.getElementById('g-address');
   const addressInput = document.getElementById('f-address');
+  const addressRequired = document.getElementById('address-required');
   addressGroup.hidden = !isHomeDelivery;
   addressInput.required = isHomeDelivery;
+  addressRequired.hidden = !isHomeDelivery;
 }
 
 function viewCart() {
@@ -362,27 +364,27 @@ function viewCart() {
       <div class="qg-order-form__intro">
         <span class="eyebrow qg-eyebrow">HECHO A TU MEDIDA</span>
         <h2 class="heading-md brandc">¿Cómo te lo acercamos?</h2>
-        <p class="body-sm muted">Déjanos tus datos para confirmar los detalles por WhatsApp.</p>
+        <p class="body-sm muted">Déjanos tus datos para confirmar los detalles por WhatsApp. Los campos marcados con <span class="qg-required" aria-hidden="true">*</span> son obligatorios.</p>
       </div>
-      <div class="qg-field" id="g-name"><label class="qg-field__label label" for="f-name">¿Cómo te llamas?</label><input id="f-name" name="name" class="qg-input body" autocomplete="name" placeholder="Ej. Laura Gómez" value="${esc(draft.name)}" required>${errMsg('Escribe tu nombre.')}</div>
-      <div class="qg-field" id="g-contact"><label class="qg-field__label label" for="f-contact">Tu WhatsApp</label><input id="f-contact" name="contact" class="qg-input body" inputmode="tel" autocomplete="tel" placeholder="Ej. 300 123 4567" value="${esc(draft.contact)}" required><p class="qg-field__hint body-sm">Te escribiremos para confirmar.</p>${errMsg('Déjanos un WhatsApp.')}</div>
-      <div class="qg-field" id="g-date"><label class="qg-field__label label" for="f-date">¿Para qué fecha?</label><input id="f-date" name="delivery_date" type="date" min="${hoy()}" class="qg-input body" value="${esc(draft.delivery_date)}" required>${errMsg('Elige una fecha válida.')}</div>
+      <div class="qg-field" id="g-name"><label class="qg-field__label label" for="f-name">¿Cómo te llamas? <span class="qg-required" aria-hidden="true">*</span></label><input id="f-name" name="name" class="qg-input body" autocomplete="name" placeholder="Ej. Laura Gómez" value="${esc(draft.name)}" required>${errMsg('Escribe tu nombre.')}</div>
+      <div class="qg-field" id="g-contact"><label class="qg-field__label label" for="f-contact">Tu WhatsApp <span class="qg-required" aria-hidden="true">*</span></label><input id="f-contact" name="contact" class="qg-input body" inputmode="tel" autocomplete="tel" placeholder="Ej. 300 123 4567" value="${esc(draft.contact)}" required><p class="qg-field__hint body-sm">Te escribiremos para confirmar.</p>${errMsg('Déjanos un WhatsApp.')}</div>
+      <div class="qg-field" id="g-date"><label class="qg-field__label label" for="f-date">¿Para qué fecha? <span class="qg-required" aria-hidden="true">*</span></label><input id="f-date" name="delivery_date" type="date" min="${hoy()}" class="qg-input body" value="${esc(draft.delivery_date)}" required>${errMsg('Elige una fecha válida.')}</div>
       <div class="qg-field" id="g-franja">
-        <label class="qg-field__label label" for="f-franja">¿En qué momento del día?</label>
-        <select id="f-franja" name="franja" class="qg-select body">
+        <label class="qg-field__label label" for="f-franja">¿En qué momento del día? <span class="qg-required" aria-hidden="true">*</span></label>
+        <select id="f-franja" name="franja" class="qg-select body" required>
           <option value="Mañana" ${draft.franja === 'Mañana' ? 'selected' : ''}>En la mañana (9:00 a. m. – 12:00 p. m.)</option>
           <option value="Tarde" ${draft.franja === 'Tarde' ? 'selected' : ''}>En la tarde (2:00 p. m. – 5:00 p. m.)</option>
         </select>
       </div>
       <div class="qg-field qg-field--full" id="g-method">
-        <label class="qg-field__label label" for="f-metodo">¿Cómo te lo acercamos?</label>
-        <select id="f-metodo" name="metodoEntrega" class="qg-select body">
+        <label class="qg-field__label label" for="f-metodo">¿Cómo te lo acercamos? <span class="qg-required" aria-hidden="true">*</span></label>
+        <select id="f-metodo" name="metodoEntrega" class="qg-select body" required>
           <option value="Domicilio" ${draft.metodoEntrega === 'Domicilio' ? 'selected' : ''}>Te lo llevamos hasta la puerta</option>
           <option value="Recoger en Envigado" ${draft.metodoEntrega === 'Recoger en Envigado' ? 'selected' : ''}>Lo recoges en Envigado</option>
         </select>
       </div>
       <div class="qg-field qg-field--full" id="g-address">
-        <label class="qg-field__label label" for="f-address">Dirección y municipio</label>
+        <label class="qg-field__label label" for="f-address">Dirección y municipio <span class="qg-required" id="address-required" aria-hidden="true">*</span></label>
         <input id="f-address" name="direccion" class="qg-input body" autocomplete="street-address" placeholder="Calle, número, barrio y municipio" value="${esc(draft.direccion)}">
         <p class="qg-field__hint body-sm">Solo la necesitamos si eliges domicilio.</p>
         ${errMsg('Escribe la dirección de entrega.')}
