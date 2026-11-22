@@ -33,6 +33,8 @@ Google Sheets y Apps Script son adecuados para comenzar y mantener una operació
 
 ## Publicación
 
+Web App publicada: https://script.google.com/macros/s/AKfycby1v6jVj1CvDaRhcXaaD-qNFFEHAC0UWxID3WhIyFxZldNiEPYzP7_PoUXau1Io14AV/exec
+
 1. Reemplaza el código anterior en Apps Script con estos archivos; no mantengas funciones duplicadas como `doGet`, `procesarPedido` o `obtenerProductosActivos`.
 2. Verifica los encabezados de las hojas y que los datos del proyecto (`SPREADSHEET_ID` y correo de administración) sean los correctos.
 3. Habilita el servicio avanzado de Google Tasks si quieres crear tareas de producción.
