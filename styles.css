@@ -196,6 +196,7 @@ button:disabled { cursor: not-allowed; }
 
 .qg-field { display: flex; min-width: 0; flex-direction: column; gap: var(--space-2); }
 .qg-field__label { color: var(--ink); }
+.qg-required { color: var(--error); font-weight: 700; }
 .qg-field__hint { margin: 0; color: var(--ink-soft); }
 .qg-field__error { display: none; align-items: flex-start; gap: var(--space-2); margin: 0; color: var(--error); }
 .qg-field__error .qg-icon { width: 18px; height: 18px; }
