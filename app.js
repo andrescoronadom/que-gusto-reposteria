@@ -1,5 +1,6 @@
-<script>
-/* Qué Gusto · Pedidos */
+/* Qué Gusto · Pedidos (Cliente + Admin vía Fetch API) */
+const API_URL = 'https://script.google.com/macros/s/AKfycby1v6jVj1CvDaRhcXaaD-qNFFEHAC0UWxID3WhIyFxZldNiEPYzP7_PoUXau1Io14AV/exec';
+
 const $app = document.getElementById('app');
 const money = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 });
 
@@ -90,6 +91,8 @@ function reconcileCart() {
 }
 
 let products = [];
+let adminProducts = [];
+let adminPin = '';
 let catalogLoaded = false;
 let filter = 'todo';
 let lastOrder = null;
@@ -103,18 +106,50 @@ let formDraft = {
   notes: ''
 };
 
-function header() {
+async function apiGet(url) {
+  const response = await fetch(url, {
+    method: 'GET',
+    credentials: 'omit',
+    redirect: 'follow'
+  });
+  if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+  return response.json();
+}
+
+async function apiPost(payload) {
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    credentials: 'omit',
+    redirect: 'follow',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
+  if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+  return response.json();
+}
+
+function isAdminView() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('vista') === 'admin';
+}
+
+function header(options = {}) {
+  const adminMode = Boolean(options.adminMode);
   const count = cartCount();
+  const actionBtn = adminMode
+    ? `<a class="qg-cartbtn" href="./">Ver tienda</a>`
+    : `<a class="qg-cartbtn" href="#/pedido" aria-label="${count ? `Ver mi pedido, ${count} productos` : 'Ver mi pedido'}">
+        ${svg('cart')}<span>Mi pedido</span>${count ? `<span class="qg-cartbtn__count caption">${count}</span>` : ''}
+      </a>`;
+
   return `<header class="qg-header"><div class="qg-header__inner">
     <a class="qg-brand" href="#/" aria-label="Qué Gusto Repostería, inicio">
       <span class="qg-brand__name">Qué Gusto</span>
       <span class="qg-brand__descriptor">Repostería artesanal</span>
     </a>
     <div class="qg-header__actions">
-      <span class="qg-header__city caption">Hecho con gusto en Medellín</span>
-      <a class="qg-cartbtn" href="#/pedido" aria-label="${count ? `Ver mi pedido, ${count} productos` : 'Ver mi pedido'}">
-        ${svg('cart')}<span>Mi pedido</span>${count ? `<span class="qg-cartbtn__count caption">${count}</span>` : ''}
-      </a>
+      <span class="qg-header__city caption">${adminMode ? 'Administración de catálogo' : 'Hecho con gusto en Medellín'}</span>
+      ${actionBtn}
     </div>
   </div></header>`;
 }
@@ -138,21 +173,21 @@ function productCard(product) {
 }
 
 function bindProductImageFallbacks() {
-    $app.querySelectorAll('.qg-card__media img').forEach((image) => {
-      image.addEventListener('error', () => {
-        const media = image.parentElement;
-        const tags = media.querySelector('.qg-card__tags');
-        const disc = document.createElement('div');
-        const label = document.createElement('span');
-        disc.className = 'qg-card__disc';
-        disc.setAttribute('aria-hidden', 'true');
-        label.className = 'qg-card__ph caption';
-        label.textContent = 'Hecho a mano, a su tiempo';
-        media.insertBefore(disc, image);
-        media.insertBefore(label, tags);
-        image.remove();
-      }, { once: true });
-    });
+  $app.querySelectorAll('.qg-card__media img').forEach((image) => {
+    image.addEventListener('error', () => {
+      const media = image.parentElement;
+      const tags = media.querySelector('.qg-card__tags');
+      const disc = document.createElement('div');
+      const label = document.createElement('span');
+      disc.className = 'qg-card__disc';
+      disc.setAttribute('aria-hidden', 'true');
+      label.className = 'qg-card__ph caption';
+      label.textContent = 'Hecho a mano, a su tiempo';
+      media.insertBefore(disc, image);
+      media.insertBefore(label, tags);
+      image.remove();
+    }, { once: true });
+  });
 }
 
 function stepper(id, quantity, name) {
@@ -374,7 +409,7 @@ function viewCart() {
   });
 }
 
-function submitOrder(form, ids, total) {
+async function submitOrder(form, ids, total) {
   formDraft = Object.fromEntries(new FormData(form));
   const isHomeDelivery = formDraft.metodoEntrega === 'Domicilio';
   const invalid = {
@@ -418,50 +453,49 @@ function submitOrder(form, ids, total) {
       return {
         idProducto: id,
         nombre: product.nombre,
+        descripcion: product.descripcion || '',
         cantidad: Number(cart[id]),
         subtotal: Number(cart[id]) * Number(product.precio)
       };
     })
   };
 
-  google.script.run
-    .withSuccessHandler((response) => {
-      if (response && response.status === 'success') {
-        lastOrder = {
-          name: formDraft.name.trim(),
-          contact: formDraft.contact.trim(),
-          date: formDraft.delivery_date,
-          id: response.orderId,
-          avisos: Array.isArray(response.avisos) ? response.avisos : []
-        };
-        cart = {};
-        saveCart();
-        formDraft = {
-          name: '',
-          contact: '',
-          delivery_date: '',
-          franja: 'Mañana',
-          metodoEntrega: 'Domicilio',
-          direccion: '',
-          notes: ''
-        };
-        location.hash = '#/gracias';
-        return;
-      }
+  try {
+    const response = await apiPost({ accion: 'crearPedido', datos: payload });
+    if (response && (response.status === 'success' || response.ok === true)) {
+      lastOrder = {
+        name: formDraft.name.trim(),
+        contact: formDraft.contact.trim(),
+        date: formDraft.delivery_date,
+        id: response.orderId || '',
+        avisos: Array.isArray(response.avisos) ? response.avisos : []
+      };
+      cart = {};
+      saveCart();
+      formDraft = {
+        name: '',
+        contact: '',
+        delivery_date: '',
+        franja: 'Mañana',
+        metodoEntrega: 'Domicilio',
+        direccion: '',
+        notes: ''
+      };
+      location.hash = '#/gracias';
+      return;
+    }
 
-      button.disabled = false;
-      button.textContent = 'Enviar solicitud de pedido';
-      showOrderError(errorBox, response && response.message
-        ? response.message
-        : 'No pudimos registrar tu solicitud. Intenta de nuevo.');
-    })
-    .withFailureHandler((error) => {
-      button.disabled = false;
-      button.textContent = 'Enviar solicitud de pedido';
-      console.error('Error al procesar el pedido:', error);
-      showOrderError(errorBox, 'Hubo un error de conexión. Intenta de nuevo.');
-    })
-    .procesarPedido(JSON.stringify(payload));
+    button.disabled = false;
+    button.textContent = 'Enviar solicitud de pedido';
+    showOrderError(errorBox, response && response.message
+      ? response.message
+      : 'No pudimos registrar tu solicitud. Intenta de nuevo.');
+  } catch (error) {
+    button.disabled = false;
+    button.textContent = 'Enviar solicitud de pedido';
+    console.error('Error al procesar el pedido:', error);
+    showOrderError(errorBox, 'Hubo un error de conexión. Intenta de nuevo.');
+  }
 }
 
 function showOrderError(container, message) {
@@ -491,29 +525,185 @@ function viewThanks() {
   </main>`;
 }
 
-function cargarProductosGAS() {
-  return new Promise((resolve, reject) => {
-    google.script.run
-      .withSuccessHandler((response) => {
-        try {
-          resolve(JSON.parse(response));
-        } catch (error) {
-          reject(new Error('El catálogo no tiene un formato válido.'));
+function viewAdmin() {
+  $app.innerHTML = `${header({ adminMode: true })}<main class="wrap qg-admin-wrap">
+    <div>
+      <span class="eyebrow qg-eyebrow">PANEL PRIVADO</span>
+      <h1 class="heading-lg brandc">Administrar productos</h1>
+    </div>
+
+    ${!adminPin ? `
+      <form class="qg-admin-card" id="admin-auth-form">
+        <div class="qg-field">
+          <label class="qg-field__label label" for="admin-pin">PIN de administrador</label>
+          <input id="admin-pin" type="password" class="qg-input body" required autocomplete="current-password" placeholder="Ingresa tu PIN">
+        </div>
+        <p class="qg-status qg-status--error body-sm" id="admin-auth-error" role="alert" hidden></p>
+        <button type="submit" class="qg-btn qg-btn--primary qg-btn--lg" id="admin-login-btn">Ingresar</button>
+      </form>
+    ` : `
+      <form class="qg-admin-card" id="admin-product-form">
+        <h2 class="heading-md brandc">Nuevo producto</h2>
+        <div class="qg-field">
+          <label class="qg-field__label label" for="p-nombre">Nombre</label>
+          <input id="p-nombre" type="text" class="qg-input body" required placeholder="Ej. Cookie Doble Chocolate 110g">
+        </div>
+        <div class="qg-field">
+          <label class="qg-field__label label" for="p-categoria">Categoría</label>
+          <input id="p-categoria" type="text" class="qg-input body" placeholder="Ej. Cookies, Rollos, Cajas">
+        </div>
+        <div class="qg-field">
+          <label class="qg-field__label label" for="p-precio">Precio (COP)</label>
+          <input id="p-precio" type="number" min="0" step="100" class="qg-input body" required placeholder="12000">
+        </div>
+        <div class="qg-field">
+          <label class="qg-field__label label" for="p-desc">Descripción</label>
+          <textarea id="p-desc" class="qg-textarea body" placeholder="Ingredientes, gramaje o notas del producto"></textarea>
+        </div>
+        <div class="qg-field">
+          <label class="qg-field__label label" for="p-img">URL de imagen (opcional, HTTPS)</label>
+          <input id="p-img" type="url" class="qg-input body" placeholder="https://...">
+        </div>
+        <p class="qg-status body-sm" id="admin-msg" role="status" hidden></p>
+        <button type="submit" class="qg-btn qg-btn--primary qg-btn--lg" id="admin-save-btn">Guardar producto</button>
+      </form>
+
+      <section class="qg-admin-card" aria-label="Listado de productos">
+        <h2 class="heading-md brandc">Productos en hoja (${adminProducts.length})</h2>
+        <div id="admin-products-list">${renderAdminProductRows()}</div>
+      </section>
+    `}
+  </main>`;
+
+  if (!adminPin) {
+    document.getElementById('admin-auth-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const pinInput = document.getElementById('admin-pin').value.trim();
+      const errBox = document.getElementById('admin-auth-error');
+      const btn = document.getElementById('admin-login-btn');
+      errBox.hidden = true;
+      btn.disabled = true;
+      btn.textContent = 'Validando…';
+
+      try {
+        const url = `${API_URL}?admin=true&pin=${encodeURIComponent(pinInput)}`;
+        const data = await apiGet(url);
+        if (!data.ok || !Array.isArray(data.productos)) {
+          throw new Error(data.error || 'PIN no válido.');
         }
-      })
-      .withFailureHandler((error) => reject(error))
-      .obtenerProductosActivos();
+        adminPin = pinInput;
+        adminProducts = data.productos;
+        viewAdmin();
+      } catch (error) {
+        btn.disabled = false;
+        btn.textContent = 'Ingresar';
+        errBox.innerHTML = `${svg('alert')}${esc(error.message || 'No se pudo validar el PIN.')}`;
+        errBox.hidden = false;
+      }
+    });
+    return;
+  }
+
+  document.getElementById('admin-product-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const btn = document.getElementById('admin-save-btn');
+    const msg = document.getElementById('admin-msg');
+    btn.disabled = true;
+    msg.hidden = true;
+
+    try {
+      const res = await apiPost({
+        accion: 'agregarProducto',
+        pin: adminPin,
+        datos: {
+          nombre: document.getElementById('p-nombre').value.trim(),
+          categoria: document.getElementById('p-categoria').value.trim() || 'Dulzuras',
+          precio: Number(document.getElementById('p-precio').value),
+          descripcion: document.getElementById('p-desc').value.trim(),
+          imagen: document.getElementById('p-img').value.trim()
+        }
+      });
+      if (!res.ok) throw new Error(res.error || 'No se pudo guardar.');
+      await refreshAdminCatalog();
+      msg.className = 'qg-status qg-status--success body-sm';
+      msg.textContent = 'Producto agregado correctamente.';
+      msg.hidden = false;
+      event.target.reset();
+    } catch (error) {
+      msg.className = 'qg-status qg-status--error body-sm';
+      msg.textContent = error.message;
+      msg.hidden = false;
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  bindAdminActions();
+}
+
+function renderAdminProductRows() {
+  if (!adminProducts.length) return '<p class="muted body-sm">No hay productos registrados todavía.</p>';
+  return adminProducts.map((item) => `
+    <div class="qg-admin-item">
+      <div style="min-width:0">
+        <strong class="body-strong brandc">${esc(item.nombre)}</strong>
+        <p class="body-sm muted">${esc(item.categoria || 'Dulzuras')} · ${cop(item.precio)} · ${item.activo ? 'Activo' : 'Oculto'}</p>
+        ${item.descripcion ? `<p class="body-sm muted">${esc(item.descripcion)}</p>` : ''}
+      </div>
+      <button class="qg-btn qg-btn--secondary" type="button" data-toggle-id="${esc(item.id)}" data-toggle-next="${!item.activo}">
+        ${item.activo ? 'Ocultar' : 'Activar'}
+      </button>
+    </div>
+  `).join('');
+}
+
+async function refreshAdminCatalog() {
+  const url = `${API_URL}?admin=true&pin=${encodeURIComponent(adminPin)}`;
+  const data = await apiGet(url);
+  if (data.ok && Array.isArray(data.productos)) {
+    adminProducts = data.productos;
+    catalogLoaded = false;
+    viewAdmin();
+  }
+}
+
+function bindAdminActions() {
+  $app.querySelectorAll('[data-toggle-id]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      await apiPost({
+        accion: 'cambiarEstadoProducto',
+        pin: adminPin,
+        datos: {
+          id: btn.dataset.toggleId,
+          activo: btn.dataset.toggleNext === 'true'
+        }
+      });
+      await refreshAdminCatalog();
+    });
   });
 }
 
+async function cargarProductosAPI() {
+  const data = await apiGet(API_URL);
+  if (Array.isArray(data)) return data;
+  if (data && data.ok && Array.isArray(data.productos)) return data.productos;
+  throw new Error(data && data.error ? data.error : 'El catálogo no tiene un formato válido.');
+}
+
 async function render(options = {}) {
+  if (isAdminView()) {
+    if (options.scroll !== false) window.scrollTo(0, 0);
+    viewAdmin();
+    return;
+  }
+
   const route = location.hash.replace(/^#/, '') || '/';
   if (options.scroll !== false) window.scrollTo(0, 0);
 
   if (!catalogLoaded) {
     try {
-      products = await cargarProductosGAS();
-      if (!Array.isArray(products)) throw new Error('El catálogo recibido no es una lista.');
+      products = await cargarProductosAPI();
       reconcileCart();
       catalogLoaded = true;
     } catch (error) {
@@ -535,4 +725,3 @@ async function render(options = {}) {
 
 window.addEventListener('hashchange', render);
 render();
-</script>
