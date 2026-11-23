@@ -39,6 +39,7 @@ const ic = {
   plus: '<path d="M12 5v14M5 12h14"/>',
   minus: '<path d="M5 12h14"/>',
   back: '<path d="M15 6l-6 6 6 6"/>',
+  home: '<path d="M3 11.5L12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M9.5 20v-6h5v6"/>',
   trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-12M9 7V4h6v3"/>',
   check: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/>',
   alert: '<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/>',
@@ -148,6 +149,7 @@ function header() {
       <span class="qg-brand__descriptor">Repostería artesanal</span>
     </a>
     <div class="qg-header__actions">
+      <a class="qg-homebtn" href="#/" aria-label="Volver al inicio" title="Inicio">${svg('home')}</a>
       ${actionBtn}
     </div>
   </div></header>`;
