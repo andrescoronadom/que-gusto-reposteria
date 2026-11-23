@@ -59,62 +59,28 @@
       }
     ];
 
-    const scriptRun = {
-      successHandler: null,
-      failureHandler: null,
-      withSuccessHandler(handler) {
-        this.successHandler = handler;
-        return this;
-      },
-      withFailureHandler(handler) {
-        this.failureHandler = handler;
-        return this;
-      },
-      obtenerProductosActivos() {
-        window.setTimeout(() => this.successHandler(JSON.stringify(sampleProducts)), 100);
-      },
-      procesarPedido(payloadJSON) {
-        const order = JSON.parse(payloadJSON);
-        window.setTimeout(() => this.successHandler({
-          status: 'success',
-          orderId: 'QG-DEMO-0001',
-          fecha: order.fechaEntrega,
-          avisos: []
-        }), 500);
-      }
-    };
-
-    window.google = { script: { run: scriptRun } };
-
-    async function loadPreview() {
-      try {
-        const [stylesResponse, appResponse] = await Promise.all([
-          fetch('./styles.html'),
-          fetch('./app.html')
-        ]);
-        if (!stylesResponse.ok || !appResponse.ok) {
-          throw new Error('No se pudieron cargar los archivos de la vista previa.');
+    const realFetch = window.fetch.bind(window);
+    window.fetch = async (url, options = {}) => {
+      if (String(url).includes('script.google.com')) {
+        if (options.method === 'POST') {
+          const payload = JSON.parse(options.body || '{}');
+          return new Response(JSON.stringify({
+            status: 'success',
+            orderId: 'QG-DEMO-0001',
+            fecha: payload.datos && payload.datos.fechaEntrega,
+            avisos: []
+          }), { status: 200, headers: { 'Content-Type': 'application/json' } });
         }
-
-        const stylesDocument = new DOMParser().parseFromString(await stylesResponse.text(), 'text/html');
-        const appDocument = new DOMParser().parseFromString(await appResponse.text(), 'text/html');
-        const style = stylesDocument.querySelector('style');
-        const script = appDocument.querySelector('script');
-        if (!style || !script) throw new Error('Falta el bloque de estilos o el script de la app.');
-
-        document.head.append(style);
-        const appScript = document.createElement('script');
-        appScript.textContent = script.textContent;
-        document.body.append(appScript);
-      } catch (error) {
-        const message = document.createElement('p');
-        message.className = 'preview-error';
-        message.textContent = error.message;
-        document.body.append(message);
+        await new Promise((resolve) => window.setTimeout(resolve, 100));
+        return new Response(JSON.stringify(sampleProducts), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        });
       }
-    }
-
-    loadPreview();
+      return realFetch(url, options);
+    };
   </script>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js"></script>
 </body>
 </html>

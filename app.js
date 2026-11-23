@@ -40,7 +40,7 @@ const ic = {
 };
 
 const svg = (name) => `<svg class="qg-icon" viewBox="0 0 24 24" aria-hidden="true">${ic[name]}</svg>`;
-const errMsg = (message) => `<p class="qg-field__error body-sm">${svg('alert')}${message}</p>`;
+const errMsg = (message, id) => `<p class="qg-field__error body-sm" id="${id}">${svg('alert')}${message}</p>`;
 const safeImageUrl = (value) => {
   if (!value) return '';
   try {
@@ -195,7 +195,7 @@ function stepper(id, quantity, name) {
   const safeName = esc(name);
   return `<div class="qg-stepper" role="group" aria-label="Cantidad de ${safeName}">
     <button class="qg-stepper__btn" type="button" data-dec="${safeId}" aria-label="Quitar una unidad de ${safeName}">${svg('minus')}</button>
-    <span class="qg-stepper__value body-strong" aria-live="polite">${quantity}</span>
+    <span class="qg-stepper__value body-strong" role="status" aria-live="polite" aria-atomic="true">${quantity}</span>
     <button class="qg-stepper__btn" type="button" data-inc="${safeId}" aria-label="Agregar una unidad de ${safeName}">${svg('plus')}</button></div>`;
 }
 
@@ -366,9 +366,9 @@ function viewCart() {
         <h2 class="heading-md brandc">¿Cómo te lo acercamos?</h2>
         <p class="body-sm muted">Déjanos tus datos para confirmar los detalles por WhatsApp. Los campos marcados con <span class="qg-required" aria-hidden="true">*</span> son obligatorios.</p>
       </div>
-      <div class="qg-field" id="g-name"><label class="qg-field__label label" for="f-name">¿Cómo te llamas? <span class="qg-required" aria-hidden="true">*</span></label><input id="f-name" name="name" class="qg-input body" autocomplete="name" placeholder="Ej. Laura Gómez" value="${esc(draft.name)}" required>${errMsg('Escribe tu nombre.')}</div>
-      <div class="qg-field" id="g-contact"><label class="qg-field__label label" for="f-contact">Tu WhatsApp <span class="qg-required" aria-hidden="true">*</span></label><input id="f-contact" name="contact" class="qg-input body" inputmode="tel" autocomplete="tel" placeholder="Ej. 300 123 4567" value="${esc(draft.contact)}" required><p class="qg-field__hint body-sm">Te escribiremos para confirmar.</p>${errMsg('Déjanos un WhatsApp.')}</div>
-      <div class="qg-field" id="g-date"><label class="qg-field__label label" for="f-date">¿Para qué fecha? <span class="qg-required" aria-hidden="true">*</span></label><input id="f-date" name="delivery_date" type="date" min="${hoy()}" class="qg-input body" value="${esc(draft.delivery_date)}" required>${errMsg('Elige una fecha válida.')}</div>
+      <div class="qg-field" id="g-name"><label class="qg-field__label label" for="f-name">¿Cómo te llamas? <span class="qg-required" aria-hidden="true">*</span></label><input id="f-name" name="name" class="qg-input body" autocomplete="name" placeholder="Ej. Laura Gómez" value="${esc(draft.name)}" aria-describedby="name-error" required>${errMsg('Escribe tu nombre.', 'name-error')}</div>
+      <div class="qg-field" id="g-contact"><label class="qg-field__label label" for="f-contact">Tu WhatsApp <span class="qg-required" aria-hidden="true">*</span></label><input id="f-contact" name="contact" class="qg-input body" inputmode="tel" autocomplete="tel" placeholder="Ej. 300 123 4567" value="${esc(draft.contact)}" aria-describedby="contact-hint contact-error" required><p class="qg-field__hint body-sm" id="contact-hint">Te escribiremos para confirmar.</p>${errMsg('Déjanos un WhatsApp.', 'contact-error')}</div>
+      <div class="qg-field" id="g-date"><label class="qg-field__label label" for="f-date">¿Para qué fecha? <span class="qg-required" aria-hidden="true">*</span></label><input id="f-date" name="delivery_date" type="date" min="${hoy()}" class="qg-input body" value="${esc(draft.delivery_date)}" aria-describedby="date-error" required>${errMsg('Elige una fecha válida.', 'date-error')}</div>
       <div class="qg-field" id="g-franja">
         <label class="qg-field__label label" for="f-franja">¿En qué momento del día? <span class="qg-required" aria-hidden="true">*</span></label>
         <select id="f-franja" name="franja" class="qg-select body" required>
@@ -385,9 +385,9 @@ function viewCart() {
       </div>
       <div class="qg-field qg-field--full" id="g-address">
         <label class="qg-field__label label" for="f-address">Dirección y municipio <span class="qg-required" id="address-required" aria-hidden="true">*</span></label>
-        <input id="f-address" name="direccion" class="qg-input body" autocomplete="street-address" placeholder="Calle, número, barrio y municipio" value="${esc(draft.direccion)}">
-        <p class="qg-field__hint body-sm">Solo la necesitamos si eliges domicilio.</p>
-        ${errMsg('Escribe la dirección de entrega.')}
+        <input id="f-address" name="direccion" class="qg-input body" autocomplete="street-address" placeholder="Calle, número, barrio y municipio" value="${esc(draft.direccion)}" aria-describedby="address-hint address-error">
+        <p class="qg-field__hint body-sm" id="address-hint">Solo la necesitamos si eliges domicilio.</p>
+        ${errMsg('Escribe la dirección de entrega.', 'address-error')}
       </div>
       <div class="qg-field qg-field--full"><label class="qg-field__label label" for="f-notes">¿Alguna nota para nosotros? (opcional)</label><textarea id="f-notes" name="notes" class="qg-textarea body" placeholder="Instrucciones especiales, dedicatoria...">${esc(draft.notes)}</textarea></div>
       <p class="qg-status qg-status--error body-sm qg-field--full" id="form-error" role="alert" hidden></p>
@@ -704,6 +704,13 @@ async function render(options = {}) {
   if (options.scroll !== false) window.scrollTo(0, 0);
 
   if (!catalogLoaded) {
+    $app.innerHTML = `<main class="wrap qg-loading" role="status" aria-live="polite">
+      <div class="qg-loading__content">
+        <span class="qg-loading__mark" aria-hidden="true">${svg('cart')}</span>
+        <h1 class="heading-md brandc">Trayendo las dulzuras…</h1>
+        <p class="muted">Estamos preparando el menú con cariño.</p>
+      </div>
+    </main>`;
     try {
       products = await cargarProductosAPI();
       reconcileCart();
@@ -720,10 +727,21 @@ async function render(options = {}) {
     }
   }
 
-  if (route === '/pedido') return viewCart();
-  if (route === '/gracias') return viewThanks();
-  viewCatalog();
+  if (route === '/pedido') {
+    viewCart();
+  } else if (route === '/gracias') {
+    viewThanks();
+  } else {
+    viewCatalog();
+  }
+  if (options.focus) {
+    requestAnimationFrame(() => {
+      const heading = $app.querySelector('h1');
+      if (heading) heading.setAttribute('tabindex', '-1');
+      heading?.focus();
+    });
+  }
 }
 
-window.addEventListener('hashchange', render);
+window.addEventListener('hashchange', () => render({ focus: true }));
 render();
