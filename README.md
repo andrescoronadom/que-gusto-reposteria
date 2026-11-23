@@ -8,6 +8,12 @@ Consulta [design.md](./design.md) para las reglas visuales, tipografía, compone
 
 La app separa la interfaz, las operaciones de negocio y las integraciones:
 
+- `app.js`: enrutamiento, coordinación de pantallas y eventos del navegador.
+- `views.js`: plantillas HTML de portada, catálogo, pedido y estados.
+- `cart-store.js`: estado persistido del carrito, cantidades y totales.
+- `api.js`: comunicación con la Web App de Apps Script.
+- `format.js`: formato monetario, fechas, escape HTML y validación de URLs.
+- `tests/`: pruebas unitarias del cliente API, carrito y utilidades. Ejecuta `npm test` con Node.js.
 - `Index.html`, `styles.html`, `app.html`: plantilla, estilos y comportamiento del catálogo.
 - `Code.gs`: puntos de entrada de la Web App y funciones invocables desde el navegador.
 - `CatalogService.gs` y `CatalogRepository.gs`: caché breve y lectura del catálogo en Sheets.
