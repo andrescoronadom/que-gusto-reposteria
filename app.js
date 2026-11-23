@@ -1,5 +1,6 @@
 /* Qué Gusto · Catálogo y pedidos */
 const API_URL = 'https://script.google.com/macros/s/AKfycby1v6jVj1CvDaRhcXaaD-qNFFEHAC0UWxID3WhIyFxZldNiEPYzP7_PoUXau1Io14AV/exec';
+const LANDING_PHOTO_URLS = ['', '', '', ''];
 
 const $app = document.getElementById('app');
 const money = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 });
@@ -92,6 +93,10 @@ function reconcileCart() {
 
 let products = [];
 let catalogLoaded = false;
+let catalogLoadPromise = null;
+let renderToken = 0;
+let landingPhoto = null;
+const unavailableLandingPhotos = new Set();
 let filter = 'todo';
 let lastOrder = null;
 let formDraft = {
@@ -138,7 +143,6 @@ function header() {
       <span class="qg-brand__descriptor">Repostería artesanal</span>
     </a>
     <div class="qg-header__actions">
-      <span class="qg-header__city caption">Hecho con gusto en Medellín</span>
       ${actionBtn}
     </div>
   </div></header>`;
@@ -194,6 +198,93 @@ function totalCarrito() {
     const product = products.find((item) => String(item.id) === String(id));
     return total + (product ? Number(quantity) * Number(product.precio) : 0);
   }, 0);
+}
+
+function chooseLandingPhoto() {
+  if (landingPhoto) return landingPhoto;
+
+  const configuredPhotos = LANDING_PHOTO_URLS.map((url, index) => ({
+    url: safeImageUrl(url),
+    name: `Dulzura ${index + 1}`
+  })).filter((photo) => photo.url);
+  const catalogPhotos = products
+    .filter((product) => safeImageUrl(product.imagen))
+    .map((product) => ({ url: safeImageUrl(product.imagen), name: product.nombre }));
+  const uniquePhotos = [...new Map([...configuredPhotos, ...catalogPhotos].map((photo) => [photo.url, photo])).values()]
+    .filter((photo) => !unavailableLandingPhotos.has(photo.url))
+    .slice(0, 4);
+  if (!uniquePhotos.length) return null;
+
+  let previousUrl = '';
+  try {
+    previousUrl = sessionStorage.getItem('qg-landing-photo') || '';
+  } catch (error) {
+    console.warn('No se pudo recuperar la última foto de portada:', error);
+  }
+  const choices = uniquePhotos.filter((photo) => photo.url !== previousUrl);
+  const pool = choices.length ? choices : uniquePhotos;
+  landingPhoto = pool[Math.floor(Math.random() * pool.length)];
+  try {
+    sessionStorage.setItem('qg-landing-photo', landingPhoto.url);
+  } catch (error) {
+    console.warn('No se pudo guardar la foto de portada:', error);
+  }
+  return landingPhoto;
+}
+
+function viewLanding() {
+  const photo = chooseLandingPhoto();
+  const visual = photo
+    ? `<figure class="qg-launch__photo"><img src="${esc(photo.url)}" alt="${esc(photo.name)}, hecho en Qué Gusto" loading="eager" fetchpriority="high"><figcaption>${esc(photo.name)}</figcaption></figure>`
+    : `<div class="qg-launch__photo qg-launch__photo--empty" aria-hidden="true"><span>Recién horneado</span></div>`;
+
+  $app.innerHTML = `${header()}<main class="qg-launch">
+    <section class="qg-launch__hero" aria-labelledby="launch-title">
+      <div class="qg-launch__hero-copy">
+        <span class="eyebrow qg-eyebrow">HOY SALE DEL HORNO</span>
+        <h1 id="launch-title" class="qg-launch__title">Una pausa que vuelve a ti.</h1>
+        <p class="qg-launch__lead"><strong>Qué Gusto</strong> nace de volver a lo que nos hace bien: hacer una pausa, crear y disfrutar el camino sin afán.</p>
+        <a class="qg-btn qg-btn--primary qg-btn--lg qg-launch__cta" href="#/productos">Ver las dulzuras <span aria-hidden="true">→</span></a>
+        <span class="qg-launch__signature">Ábrelo con gusto, disfrútalo sin afán.</span>
+      </div>
+      <div class="qg-launch__visual" aria-label="Dulzura de Qué Gusto">${visual}</div>
+    </section>
+    <section class="qg-launch__story" aria-label="La historia de Qué Gusto">
+      <p class="qg-launch__opening">Hay momentos en los que la vida te invita a hacer una pausa.</p>
+      <div class="qg-launch__chapter">
+        <span class="eyebrow qg-eyebrow">VOLVER A MÍ</span>
+        <p>A veces vivimos en automático y no nos damos cuenta de lo que pasa a nuestro alrededor: el ritmo acelerado, el trabajo, los hijos, la familia, las mascotas... no nos permiten frenar, y la vida misma se encarga de hacerlo.</p>
+        <p><strong>Qué Gusto</strong> nace de un momento de pausa personal, cuando el piloto automático siguió de largo y el silencio y la reflexión abrieron espacio para algo que me gusta mucho: la repostería. Desde hace tiempo la hacía por hobby, y en esa pausa volví a ella buscando reconectar conmigo y sobrellevar esos momentos de dificultad. Así como la fotografía me ayudó en otro momento, la repostería me trajo de vuelta a mí.</p>
+      </div>
+      <div class="qg-launch__chapter qg-launch__chapter--warm">
+        <span class="eyebrow qg-eyebrow">HECHO SIN AFÁN</span>
+        <p>Hoy disfruto profundamente este proceso de creación de <strong>Qué Gusto</strong>. Horneamos y amasamos sin afán, disfrutando el camino y cuidando el resultado, con amor y dedicación.</p>
+      </div>
+      <div class="qg-launch__chapter">
+        <span class="eyebrow qg-eyebrow">UN GUSTO PARA COMPARTIR</span>
+        <p>Quiero que cuando pruebes cada producto, puedas vivir esa misma experiencia: hacer la pausa que necesitás en el día y disfrutar algo rico y de buen gusto, reconectar contigo, con tu familia, amigos o compañeros, o simplemente consentirte con un instante agradable sin culpa.</p>
+        <p>Gracias por abrirnos un espacio para acompañarte en tus momentos de pausa y celebración.</p>
+        <p class="qg-launch__closing">Y recuerda: Ábrelo con gusto y disfrútalo sin afán.</p>
+      </div>
+    </section>
+    <section class="qg-launch__end" aria-label="Descubrir el menú">
+      <p class="eyebrow">REPOSTERÍA ARTESANAL · MEDELLÍN</p>
+      <h2>Tu pausa rica empieza aquí.</h2>
+      <a class="qg-btn qg-btn--fresh qg-btn--lg" href="#/productos">Conocer los productos <span aria-hidden="true">→</span></a>
+    </section>
+    <footer class="qg-footer"><span>Qué Gusto Repostería</span><span>Ábrelo con gusto, disfrútalo sin afán.</span></footer>
+  </main>`;
+  bindLandingImageFallbacks();
+}
+
+function bindLandingImageFallbacks() {
+  $app.querySelectorAll('.qg-launch__photo img').forEach((image) => {
+    image.addEventListener('error', () => {
+      unavailableLandingPhotos.add(image.currentSrc || image.src);
+      landingPhoto = null;
+      viewLanding();
+    }, { once: true });
+  });
 }
 
 function viewCatalog() {
@@ -310,7 +401,7 @@ function viewCart() {
         <span class="eyebrow qg-eyebrow">TU CAJITA ESTÁ ESPERANDO</span>
         <h1 class="heading-lg brandc">Todavía no hay antojos</h1>
         <p>Explora el menú y agrega algo rico para empezar tu pedido.</p>
-        <a class="qg-btn qg-btn--primary qg-btn--lg" href="#/">Descubrir dulzuras</a>
+        <a class="qg-btn qg-btn--primary qg-btn--lg" href="#/productos">Descubrir dulzuras</a>
       </div>
     </main>`;
     return;
@@ -331,7 +422,7 @@ function viewCart() {
   const draft = formDraft;
   $app.innerHTML = `${header()}<main class="wrap qg-checkout">
     <div class="qg-checkout__intro">
-      <a class="qg-btn qg-btn--ghost" href="#/">${svg('back')}Seguir eligiendo</a>
+      <a class="qg-btn qg-btn--ghost" href="#/productos">${svg('back')}Seguir eligiendo</a>
       <span class="eyebrow qg-eyebrow">UN PASITO MÁS</span>
       <h1 class="heading-lg brandc">Tu pedido con gusto</h1>
       <p>Revisa tus dulzuras y cuéntanos cuándo y dónde las quieres.</p>
@@ -512,7 +603,7 @@ function viewThanks() {
       <p class="body-lg">Recibimos tu solicitud para el ${esc(fecha(lastOrder.date))}. Te escribiremos al ${esc(lastOrder.contact)} para confirmar los detalles.</p>
       <p class="qg-thanks__status body-sm" role="status">${statusText}</p>
       ${lastOrder.id ? `<p class="qg-thanks__id caption">Número de pedido <strong>${esc(lastOrder.id)}</strong></p>` : ''}
-      <a class="qg-btn qg-btn--primary qg-btn--lg" href="#/">Volver a las dulzuras</a>
+      <a class="qg-btn qg-btn--primary qg-btn--lg" href="#/productos">Volver a las dulzuras</a>
     </div>
   </main>`;
 }
@@ -524,35 +615,63 @@ async function cargarProductosAPI() {
   throw new Error(data && data.error ? data.error : 'El catálogo no tiene un formato válido.');
 }
 
+async function loadCatalog() {
+  if (catalogLoaded) return;
+  if (!catalogLoadPromise) {
+    catalogLoadPromise = cargarProductosAPI()
+      .then((catalog) => {
+        products = catalog;
+        reconcileCart();
+        catalogLoaded = true;
+      })
+      .finally(() => {
+        catalogLoadPromise = null;
+      });
+  }
+  await catalogLoadPromise;
+}
+
 async function render(options = {}) {
-  const route = location.hash.replace(/^#/, '') || '/';
+  const renderId = ++renderToken;
+  let route = location.hash.replace(/^#/, '') || '/';
   if (options.scroll !== false) window.scrollTo(0, 0);
 
   if (!catalogLoaded) {
+    const isLanding = route === '/';
     $app.innerHTML = `<main class="wrap qg-loading" role="status" aria-live="polite">
       <div class="qg-loading__content">
         <span class="qg-loading__mark" aria-hidden="true">${svg('cart')}</span>
-        <h1 class="heading-md brandc">Trayendo las dulzuras…</h1>
-        <p class="muted">Estamos preparando el menú con cariño.</p>
+        <h1 class="heading-md brandc">${isLanding ? 'Preparando tu pausa…' : 'Trayendo las dulzuras…'}</h1>
+        <p class="muted">${isLanding ? 'Estamos eligiendo algo rico para recibirte.' : 'Estamos preparando el menú con cariño.'}</p>
+        ${isLanding ? '<div class="qg-loading__progress" role="progressbar" aria-label="Preparando la portada"><span></span></div>' : ''}
       </div>
     </main>`;
     try {
-      products = await cargarProductosAPI();
-      reconcileCart();
-      catalogLoaded = true;
+      await loadCatalog();
     } catch (error) {
-      console.error('Error al cargar el catálogo:', error);
-      $app.innerHTML = `<main class="wrap center">
-        <h1 class="heading-md brandc">No pudimos traer las dulzuras</h1>
-        <p>Revisa tu conexión e inténtalo de nuevo.</p>
-        <button class="qg-btn qg-btn--primary" id="retry-catalog" type="button">Intentar de nuevo</button>
-      </main>`;
-      document.getElementById('retry-catalog').addEventListener('click', render, { once: true });
+      if (renderId !== renderToken) return;
+      route = location.hash.replace(/^#/, '') || '/';
+      if (route === '/') {
+        console.warn('No se pudieron cargar las fotos del catálogo:', error);
+        viewLanding();
+      } else {
+        console.error('Error al cargar el catálogo:', error);
+        $app.innerHTML = `<main class="wrap center">
+          <h1 class="heading-md brandc">No pudimos traer las dulzuras</h1>
+          <p>Revisa tu conexión e inténtalo de nuevo.</p>
+          <button class="qg-btn qg-btn--primary" id="retry-catalog" type="button">Intentar de nuevo</button>
+        </main>`;
+        document.getElementById('retry-catalog').addEventListener('click', render, { once: true });
+      }
       return;
     }
+    if (renderId !== renderToken) return;
+    route = location.hash.replace(/^#/, '') || '/';
   }
 
-  if (route === '/pedido') {
+  if (route === '/') {
+    viewLanding();
+  } else if (route === '/pedido') {
     viewCart();
   } else if (route === '/gracias') {
     viewThanks();
