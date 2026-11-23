@@ -1,6 +1,6 @@
-# Qué Gusto · Pedidos
+# Qué Gusto · Repostería
 
-Interfaz mobile-first para el catálogo y la solicitud de pedidos de Qué Gusto Repostería. No captura pagos ni incluye un panel administrativo: el catálogo se mantiene directamente en Google Sheets, con acceso compartido solo a las cuentas autorizadas.
+Interfaz mobile-first para el catálogo y la solicitud de pedidos de Qué Gusto · Repostería. No captura pagos ni incluye un panel administrativo: el catálogo se mantiene directamente en Google Sheets, con acceso compartido solo a las cuentas autorizadas.
 
 Consulta [design.md](./design.md) para las reglas visuales, tipografía, componentes, accesibilidad y tono de contenido.
 

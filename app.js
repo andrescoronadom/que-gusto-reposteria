@@ -1,4 +1,4 @@
-/* Qué Gusto · Catálogo y pedidos */
+/* Qué Gusto · Repostería: catálogo y pedidos */
 const API_URL = 'https://script.google.com/macros/s/AKfycby1v6jVj1CvDaRhcXaaD-qNFFEHAC0UWxID3WhIyFxZldNiEPYzP7_PoUXau1Io14AV/exec';
 const LANDING_PHOTOS = [
   { url: 'https://drive.google.com/thumbnail?id=1sXB18_u1lufD5UxSKLK1ptigVskaNm22&sz=w1200', name: 'Pausa con café' },
@@ -39,7 +39,7 @@ const ic = {
   plus: '<path d="M12 5v14M5 12h14"/>',
   minus: '<path d="M5 12h14"/>',
   back: '<path d="M15 6l-6 6 6 6"/>',
-  home: '<path d="M3 11.5L12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M9.5 20v-6h5v6"/>',
+  instagram: '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5"/>',
   trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-12M9 7V4h6v3"/>',
   check: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/>',
   alert: '<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/>',
@@ -144,12 +144,10 @@ function header() {
   </a>`;
 
   return `<header class="qg-header"><div class="qg-header__inner">
-    <a class="qg-brand" href="#/" aria-label="Qué Gusto Repostería, inicio">
-      <span class="qg-brand__name">Qué Gusto</span>
-      <span class="qg-brand__descriptor">Repostería artesanal</span>
+    <a class="qg-brand" href="#/" aria-label="Qué Gusto · Repostería, inicio">
+      <img class="qg-header__logo" src="./logo-A-blanco.png" alt="Qué Gusto · Repostería">
     </a>
     <div class="qg-header__actions">
-      <a class="qg-homebtn" href="#/" aria-label="Volver al inicio" title="Inicio">${svg('home')}</a>
       ${actionBtn}
     </div>
   </div></header>`;
@@ -242,7 +240,7 @@ function chooseLandingPhoto() {
 function viewLanding() {
   const photo = chooseLandingPhoto();
   const visual = photo
-    ? `<figure class="qg-launch__photo"><img src="${esc(photo.url)}" alt="${esc(photo.name)}, hecho en Qué Gusto" loading="eager" fetchpriority="high"><figcaption>${esc(photo.name)}</figcaption></figure>`
+    ? `<figure class="qg-launch__photo"><img src="${esc(photo.url)}" alt="${esc(photo.name)}, hecho en Qué Gusto · Repostería" loading="eager" fetchpriority="high"><figcaption>${esc(photo.name)}</figcaption></figure>`
     : `<div class="qg-launch__photo qg-launch__photo--empty" aria-hidden="true"><span>Recién horneado</span></div>`;
 
   $app.innerHTML = `${header()}<main class="qg-launch">
@@ -250,28 +248,26 @@ function viewLanding() {
       <div class="qg-launch__hero-copy">
         <span class="eyebrow qg-eyebrow">HOY SALE DEL HORNO</span>
         <h1 id="launch-title" class="qg-launch__title">Una pausa para volver a ti.</h1>
-        <p class="qg-launch__lead"><strong>Qué Gusto</strong> nace de volver a lo que nos hace bien: hacer una pausa, crear y disfrutar el camino sin afán.</p>
+        <p class="qg-launch__lead"><strong>Qué Gusto · Repostería</strong> nace de volver a lo que nos hace bien: hacer una pausa, crear y disfrutar el camino sin afán.</p>
         <a class="qg-btn qg-btn--primary qg-btn--lg qg-launch__cta" href="#/productos">Ver las dulzuras <span aria-hidden="true">→</span></a>
-        <span class="qg-launch__signature">Ábrelo con gusto, disfrútalo sin afán.</span>
       </div>
-      <div class="qg-launch__visual" aria-label="Dulzura de Qué Gusto">${visual}</div>
+      <div class="qg-launch__visual" aria-label="Dulzura de Qué Gusto · Repostería">${visual}</div>
     </section>
-    <section class="qg-launch__story" aria-label="La historia de Qué Gusto">
+    <section class="qg-launch__story" aria-label="La historia de Qué Gusto · Repostería">
       <p class="qg-launch__opening">Hay momentos en los que la vida te invita a hacer una pausa.</p>
       <div class="qg-launch__chapter">
         <span class="eyebrow qg-eyebrow">VOLVER A MÍ</span>
         <p>A veces vivimos en automático y no nos damos cuenta de lo que pasa a nuestro alrededor: el ritmo acelerado, el trabajo, los hijos, la familia, las mascotas... no nos permiten frenar, y la vida misma se encarga de hacerlo.</p>
-        <p><strong>Qué Gusto</strong> nace de un momento de pausa personal, cuando el piloto automático siguió de largo y el silencio y la reflexión abrieron espacio para algo que me gusta mucho: la repostería. Desde hace tiempo la hacía por hobby, y en esa pausa volví a ella buscando reconectar conmigo y sobrellevar esos momentos de dificultad. Así como la fotografía me ayudó en otro momento, la repostería me trajo de vuelta a mí.</p>
+        <p><strong>Qué Gusto · Repostería</strong> nace de un momento de pausa personal, cuando el piloto automático siguió de largo y el silencio y la reflexión abrieron espacio para algo que me gusta mucho: la repostería. Desde hace tiempo la hacía por hobby, y en esa pausa volví a ella buscando reconectar conmigo y sobrellevar esos momentos de dificultad. Así como la fotografía me ayudó en otro momento, la repostería me trajo de vuelta a mí.</p>
       </div>
       <div class="qg-launch__chapter qg-launch__chapter--warm">
         <span class="eyebrow qg-eyebrow">HECHO SIN AFÁN</span>
-        <p>Hoy disfruto profundamente este proceso de creación de <strong>Qué Gusto</strong>. Horneamos y amasamos sin afán, disfrutando el camino y cuidando el resultado, con amor y dedicación.</p>
+        <p>Hoy disfruto profundamente este proceso de creación de <strong>Qué Gusto · Repostería</strong>. Horneamos y amasamos sin afán, disfrutando el camino y cuidando el resultado, con amor y dedicación.</p>
       </div>
       <div class="qg-launch__chapter">
         <span class="eyebrow qg-eyebrow">UN GUSTO PARA COMPARTIR</span>
-        <p>Quiero que cuando pruebes cada producto, puedas vivir esa misma experiencia: hacer la pausa que necesitás en el día y disfrutar algo rico y de buen gusto, reconectar contigo, con tu familia, amigos o compañeros, o simplemente consentirte con un instante agradable sin culpa.</p>
+        <p>Quiero que cuando pruebes cada producto, puedas vivir esa misma experiencia: hacer la pausa que necesitas en el día y disfrutar algo rico y de buen gusto, reconectar contigo, con tu familia, amigos o compañeros, o simplemente consentirte con un instante agradable sin culpa.</p>
         <p>Gracias por abrirnos un espacio para acompañarte en tus momentos de pausa y celebración.</p>
-        <p class="qg-launch__closing">Y recuerda: Ábrelo con gusto y disfrútalo sin afán.</p>
       </div>
     </section>
     <section class="qg-launch__end" aria-label="Descubrir el menú">
@@ -279,7 +275,7 @@ function viewLanding() {
       <h2>Tu pausa rica empieza aquí.</h2>
       <a class="qg-btn qg-btn--fresh qg-btn--lg" href="#/productos">Conocer los productos <span aria-hidden="true">→</span></a>
     </section>
-    <footer class="qg-footer"><span>Qué Gusto Repostería</span><span>Ábrelo con gusto, disfrútalo sin afán.</span></footer>
+    <footer class="qg-footer"><span>Qué Gusto · Repostería</span><a class="qg-footer__instagram" href="https://www.instagram.com/somosquegusto/" target="_blank" rel="noopener noreferrer">${svg('instagram')}<span>@somosquegusto</span></a><span>Ábrelo con gusto, disfrútalo sin afán.</span></footer>
   </main>`;
   bindLandingImageFallbacks();
 }
@@ -311,7 +307,6 @@ function viewCatalog() {
         <h1 id="catalog-title" class="qg-hero__title">Date gusto, sin afán</h1>
         <p class="body-lg qg-hero__description">Cookies, rollos y otras dulzuras hechas a mano para acompañar tus momentos favoritos.</p>
         <button class="qg-btn qg-btn--primary qg-hero__cta" id="discover-menu" type="button">Explorar el menú <span aria-hidden="true">↓</span></button>
-        <span class="qg-hero__note caption">Ábrelo con gusto, disfrútalo sin afán</span>
       </div>
       <div class="qg-hero__art" aria-hidden="true">
         <span class="qg-hero__orbit qg-hero__orbit--one"></span>
@@ -339,7 +334,7 @@ function viewCatalog() {
         : `<div class="center" style="padding:48px 16px;display:flex;flex-direction:column;gap:8px"><h2 class="heading-md brandc">${products.length ? 'Aún no hay dulzuras en esta categoría' : 'Por aquí todavía no hay dulzuras'}</h2><p>${products.length ? 'Prueba con otro tipo.' : 'Vuelve pronto; estaremos horneando algo rico.'}</p></div>`}
     </section>
     ${count ? `<div class="bar"><a class="qg-btn qg-btn--primary qg-btn--lg" href="#/pedido">Ver mi pedido · ${count} · ${cop(total)}</a></div>` : ''}
-    <footer class="qg-footer"><span>Qué Gusto Repostería</span><span>Ábrelo con gusto, disfrútalo sin afán.</span></footer>
+    <footer class="qg-footer"><span>Qué Gusto · Repostería</span><a class="qg-footer__instagram" href="https://www.instagram.com/somosquegusto/" target="_blank" rel="noopener noreferrer">${svg('instagram')}<span>@somosquegusto</span></a><span>Ábrelo con gusto, disfrútalo sin afán.</span></footer>
   </main>`;
 
   bindProductImageFallbacks();

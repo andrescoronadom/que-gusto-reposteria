@@ -2,7 +2,7 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Vista previa Qué Gusto",
+			"label": "Vista previa · Qué Gusto · Repostería",
 			"type": "shell",
 			"command": "python3",
 			"args": [

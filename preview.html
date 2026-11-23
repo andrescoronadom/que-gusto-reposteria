@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#FDF9F2">
-  <title>Vista previa · Qué Gusto</title>
+  <link rel="icon" type="image/png" href="./isotipo-artesano-transparente.png">
+  <title>Vista previa · Qué Gusto · Repostería</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -26,10 +27,57 @@
       color: #842e2a;
       font: 16px/1.5 "DM Sans", sans-serif;
     }
+    .brand-options {
+      padding: 18px 24px;
+      background: #F5EDDF;
+      color: #2E1A16;
+      font-family: "DM Sans", sans-serif;
+    }
+    .brand-options__inner { max-width: 1180px; margin: 0 auto; }
+    .brand-options__title { margin: 0 0 12px; color: #4A1E51; font: 24px/1.2 "Caprasimo", Georgia, serif; }
+    .brand-options__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .brand-options__card { min-width: 0; border: 1px solid rgb(74 30 81 / 18%); border-radius: 12px; padding: 10px; background: #FDF9F2; }
+    .brand-options__label { margin: 0 0 8px; color: #6B5750; font-size: 12px; font-weight: 700; }
+    .brand-options__sample { display: flex; min-height: 76px; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid rgb(74 30 81 / 16%); padding: 8px 10px; background: #fff; }
+    .brand-options__full-logo { display: block; width: auto; height: 91.2384px; }
+    .brand-options__sample--type { justify-content: flex-start; }
+    .brand-options__mark { position: relative; width: 39.2px; height: 60px; flex: none; overflow: hidden; }
+    .brand-options__mark img { position: absolute; top: 0; left: 0; display: block; width: auto; max-width: none; height: 60px; }
+    .brand-options__wordmark { display: flex; flex-direction: column; color: #4A1E51; }
+    .brand-options__wordmark strong { font: 30px/.95 "Caprasimo", Georgia, serif; }
+    .brand-options__wordmark span { margin-top: 4px; color: #344B92; font-size: 9px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+    .brand-options__action { flex: none; border: 1px solid rgb(74 30 81 / 26%); border-radius: 999px; padding: 8px 12px; color: #4A1E51; font-size: 12px; font-weight: 700; }
+    @media (max-width: 640px) {
+      .brand-options { padding: 14px 16px; }
+      .brand-options__grid { grid-template-columns: 1fr; }
+      .brand-options__title { font-size: 21px; }
+    }
   </style>
 </head>
 <body>
   <div class="preview-notice">Vista previa local · productos de muestra · no se guardan pedidos en Google Sheets</div>
+  <section class="brand-options" aria-labelledby="brand-options-title">
+    <div class="brand-options__inner">
+      <h1 class="brand-options__title" id="brand-options-title">Compara las opciones de marca</h1>
+      <div class="brand-options__grid">
+        <article class="brand-options__card">
+          <h2 class="brand-options__label">A · Logo completo ampliado</h2>
+          <div class="brand-options__sample">
+            <img class="brand-options__full-logo" src="./logo-A-blanco.png" alt="Logo completo de Qué Gusto · Repostería">
+            <span class="brand-options__action">Mi pedido</span>
+          </div>
+        </article>
+        <article class="brand-options__card">
+          <h2 class="brand-options__label">B · Isotipo del artesano + tipografía</h2>
+          <div class="brand-options__sample brand-options__sample--type">
+            <span class="brand-options__mark" aria-hidden="true"><img src="./logo-A-blanco.png" alt=""></span>
+            <span class="brand-options__wordmark"><strong>Qué Gusto</strong><span>Repostería</span></span>
+            <span class="brand-options__action">Mi pedido</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
   <div id="app" class="qg-surface"></div>
   <script>
     const sampleProducts = [

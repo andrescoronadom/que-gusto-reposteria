@@ -1,4 +1,4 @@
-# Qué Gusto · Especificaciones de diseño
+# Qué Gusto · Repostería: especificaciones de diseño
 
 Guía de referencia para mantener coherentes el catálogo virtual, el carrito y el formulario de solicitud de pedidos. La marca debe sentirse artesanal, cálida y alegre, sin apurar a quien compra.
 
