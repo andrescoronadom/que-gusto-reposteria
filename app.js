@@ -247,7 +247,7 @@ function viewLanding() {
     <section class="qg-launch__hero" aria-labelledby="launch-title">
       <div class="qg-launch__hero-copy">
         <span class="eyebrow qg-eyebrow">HOY SALE DEL HORNO</span>
-        <h1 id="launch-title" class="qg-launch__title">Una pausa que vuelve a ti.</h1>
+        <h1 id="launch-title" class="qg-launch__title">Una pausa para volver a ti.</h1>
         <p class="qg-launch__lead"><strong>Qué Gusto</strong> nace de volver a lo que nos hace bien: hacer una pausa, crear y disfrutar el camino sin afán.</p>
         <a class="qg-btn qg-btn--primary qg-btn--lg qg-launch__cta" href="#/productos">Ver las dulzuras <span aria-hidden="true">→</span></a>
         <span class="qg-launch__signature">Ábrelo con gusto, disfrútalo sin afán.</span>
