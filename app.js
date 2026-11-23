@@ -153,6 +153,10 @@ function header() {
   </div></header>`;
 }
 
+function footer() {
+  return `<footer class="qg-footer"><span>Qué Gusto · Repostería</span><a class="qg-footer__instagram" href="https://www.instagram.com/somosquegusto/" target="_blank" rel="noopener noreferrer">${svg('instagram')}<span>@somosquegusto</span></a><span>Ábrelo con gusto, disfrútalo sin afán.</span></footer>`;
+}
+
 function productCard(product) {
   const id = String(product.id);
   const quantity = Number(cart[id] || 0);
@@ -275,7 +279,7 @@ function viewLanding() {
       <h2>Tu pausa rica empieza aquí.</h2>
       <a class="qg-btn qg-btn--fresh qg-btn--lg" href="#/productos">Conocer los productos <span aria-hidden="true">→</span></a>
     </section>
-    <footer class="qg-footer"><span>Qué Gusto · Repostería</span><a class="qg-footer__instagram" href="https://www.instagram.com/somosquegusto/" target="_blank" rel="noopener noreferrer">${svg('instagram')}<span>@somosquegusto</span></a><span>Ábrelo con gusto, disfrútalo sin afán.</span></footer>
+    ${footer()}
   </main>`;
   bindLandingImageFallbacks();
 }
@@ -334,7 +338,7 @@ function viewCatalog() {
         : `<div class="center" style="padding:48px 16px;display:flex;flex-direction:column;gap:8px"><h2 class="heading-md brandc">${products.length ? 'Aún no hay dulzuras en esta categoría' : 'Por aquí todavía no hay dulzuras'}</h2><p>${products.length ? 'Prueba con otro tipo.' : 'Vuelve pronto; estaremos horneando algo rico.'}</p></div>`}
     </section>
     ${count ? `<div class="bar"><a class="qg-btn qg-btn--primary qg-btn--lg" href="#/pedido">Ver mi pedido · ${count} · ${cop(total)}</a></div>` : ''}
-    <footer class="qg-footer"><span>Qué Gusto · Repostería</span><a class="qg-footer__instagram" href="https://www.instagram.com/somosquegusto/" target="_blank" rel="noopener noreferrer">${svg('instagram')}<span>@somosquegusto</span></a><span>Ábrelo con gusto, disfrútalo sin afán.</span></footer>
+    ${footer()}
   </main>`;
 
   bindProductImageFallbacks();
@@ -405,6 +409,7 @@ function viewCart() {
         <p>Explora el menú y agrega algo rico para empezar tu pedido.</p>
         <a class="qg-btn qg-btn--primary qg-btn--lg" href="#/productos">Descubrir dulzuras</a>
       </div>
+      ${footer()}
     </main>`;
     return;
   }
@@ -475,7 +480,9 @@ function viewCart() {
       <div class="qg-field qg-field--full"><label class="qg-field__label label" for="f-notes">¿Alguna nota para nosotros? (opcional)</label><textarea id="f-notes" name="notes" class="qg-textarea body" placeholder="Instrucciones especiales, dedicatoria...">${esc(draft.notes)}</textarea></div>
       <p class="qg-status qg-status--error body-sm qg-field--full" id="form-error" role="alert" hidden></p>
       <button type="submit" class="qg-btn qg-btn--primary qg-btn--lg qg-btn--block qg-field--full" id="send">Enviar solicitud de pedido</button>
-    </form></div></main>`;
+    </form></div>
+    ${footer()}
+  </main>`;
 
   bindCart();
   const form = document.getElementById('order-form');

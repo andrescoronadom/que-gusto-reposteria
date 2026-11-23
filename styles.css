@@ -313,6 +313,7 @@ button:disabled { cursor: not-allowed; }
 .bar .qg-btn { border-radius: var(--radius-pill); box-shadow: 0 8px 24px rgb(46 26 22 / 20%); }
 
 .qg-empty-cart { min-height: 68vh; align-items: center; justify-content: center; }
+.qg-empty-cart .qg-footer { width: 100%; }
 .qg-loading { min-height: 68vh; align-items: center; justify-content: center; text-align: center; }
 .qg-loading__content { display: flex; max-width: 480px; flex-direction: column; align-items: center; gap: 14px; }
 .qg-loading__mark { display: grid; width: 72px; height: 72px; place-items: center; border-radius: 50%; background: var(--accent-fresh); color: var(--ink-brand); }
