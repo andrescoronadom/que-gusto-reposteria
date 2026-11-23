@@ -1,6 +1,11 @@
 /* Qué Gusto · Catálogo y pedidos */
 const API_URL = 'https://script.google.com/macros/s/AKfycby1v6jVj1CvDaRhcXaaD-qNFFEHAC0UWxID3WhIyFxZldNiEPYzP7_PoUXau1Io14AV/exec';
-const LANDING_PHOTO_URLS = ['', '', '', ''];
+const LANDING_PHOTOS = [
+  { url: 'https://drive.google.com/thumbnail?id=1sXB18_u1lufD5UxSKLK1ptigVskaNm22&sz=w1200', name: 'Pausa con café' },
+  { url: 'https://drive.google.com/thumbnail?id=1ccTc71vofgQ01PihtOEtXz5iTTgDUN-C&sz=w1200', name: 'Pausa de desayuno' },
+  { url: 'https://drive.google.com/thumbnail?id=1e_S8vmDm0nsNVD1ytUiUpYEjlmM8tvsE&sz=w1200', name: 'Pausa en la montaña' },
+  { url: 'https://drive.google.com/thumbnail?id=1jiVQZOwNsHpYjb1KWue46PMIKxYg_W8O&sz=w1200', name: 'Pausa de paseo' }
+];
 
 const $app = document.getElementById('app');
 const money = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 });
@@ -203,9 +208,9 @@ function totalCarrito() {
 function chooseLandingPhoto() {
   if (landingPhoto) return landingPhoto;
 
-  const configuredPhotos = LANDING_PHOTO_URLS.map((url, index) => ({
-    url: safeImageUrl(url),
-    name: `Dulzura ${index + 1}`
+  const configuredPhotos = LANDING_PHOTOS.map((photo) => ({
+    url: safeImageUrl(photo.url),
+    name: photo.name
   })).filter((photo) => photo.url);
   const catalogPhotos = products
     .filter((product) => safeImageUrl(product.imagen))
