@@ -225,6 +225,9 @@ button:disabled { cursor: not-allowed; }
 .qg-brand__descriptor { margin-top: 5px; color: var(--link); font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
 .qg-header__actions { display: flex; align-items: center; gap: 20px; }
 .qg-header__city { color: var(--ink-soft); }
+.qg-homebtn { display: inline-flex; width: 46px; height: 46px; flex: none; align-items: center; justify-content: center; border: 1px solid rgb(74 30 81 / 26%); border-radius: var(--radius-pill); background: var(--surface); color: var(--ink-brand); text-decoration: none; transition: background-color .18s ease, border-color .18s ease; }
+.qg-homebtn:hover { border-color: var(--ink-brand); background: white; color: var(--ink-brand); }
+.qg-homebtn .qg-icon { width: 22px; height: 22px; }
 .qg-cartbtn { position: relative; display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 9px; border: 1px solid rgb(74 30 81 / 26%); border-radius: var(--radius-pill); padding: 0 18px; background: var(--surface); color: var(--ink-brand); font-weight: 700; text-decoration: none; transition: background-color .18s ease, border-color .18s ease; }
 .qg-cartbtn:hover { border-color: var(--ink-brand); background: white; color: var(--ink-brand); }
 .qg-cartbtn .qg-icon { width: 20px; height: 20px; }
@@ -375,6 +378,7 @@ button:disabled { cursor: not-allowed; }
   .qg-header__actions { gap: 8px; }
   .qg-header__city { display: none; }
   .qg-brand__name { font-size: 24px; }
+  .qg-homebtn { width: var(--touch-target); height: var(--touch-target); }
   .qg-cartbtn { min-height: var(--touch-target); padding: 0 13px; }
   .qg-launch { padding: 16px 16px 0; }
   .qg-launch__hero { grid-template-columns: 1fr; gap: 18px; padding: 25px 0 42px; }
